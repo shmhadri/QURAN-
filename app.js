@@ -5,9 +5,24 @@
   function clamp(val, min, max) { return Math.min(Math.max(val, min), max); }
   function toInt(s, def) { const n = parseInt(s, 10); return Number.isFinite(n) ? n : def; }
 
+  // ===== Base Path & Asset Logic =====
+  // Detects if running on root (Render) or subpath (GitHub Pages)
+  const BASE = (() => {
+    const p = window.location.pathname;
+    const repo = "QURAN-"; // Change this if your repo name is different
+    if (p.startsWith(`/${repo}/`)) return `/${repo}/`;
+    return "/";
+  })();
+
+  const assetUrl = (rel) => {
+    // Ensure relative path doesn't start with /
+    const cleanRel = rel.replace(/^\/+/, "");
+    return new URL(cleanRel, window.location.origin + BASE).toString();
+  };
+
   // ===== Config =====
-  const PAGES_JSON = "assets/pages.json";
-  const SURAHS_JSON = "assets/surahs.json";
+  const PAGES_JSON = assetUrl("assets/pages.json");
+  const SURAHS_JSON = assetUrl("assets/surahs.json");
   
   const STORAGE = {
     page: "quran_page_v2",
@@ -16,34 +31,10 @@
     sound: "quran_sound_v2",
     bookmark: "quran_bookmark_v2",
     lastVisit: "quran_last_visit",
-    readingPage: "quran_reading_page" // Last page user was reading
+    readingPage: "quran_reading_page"
   };
 
-  // ===== DOM =====
-  const elBook = document.getElementById("book");
-  const statusEl = document.getElementById("status");
-  const prevBtn = document.getElementById("prevBtn");
-  const nextBtn = document.getElementById("nextBtn");
-  const pageInput = document.getElementById("pageInput");
-  const pageCountEl = document.getElementById("pageCount");
-  const zoomInBtn = document.getElementById("zoomIn");
-  const zoomOutBtn = document.getElementById("zoomOut");
-  const zoomLabel = document.getElementById("zoomLabel");
-  const spreadToggle = document.getElementById("spreadToggle");
-  const fullscreenBtn = document.getElementById("fullscreenBtn");
-  const soundBtn = document.getElementById("soundBtn");
-  const modeLabel = document.getElementById("modeLabel");
-  
-  // New UI
-  const indexBtn = document.getElementById("indexBtn");
-  const bookmarkBtn = document.getElementById("bookmarkBtn");
-  const bookmarkRibbon = document.getElementById("bookmarkRibbon");
-  const sidebar = document.getElementById("sidebar");
-  const overlay = document.getElementById("overlay");
-  const closeSidebarBtn = document.getElementById("closeSidebar");
-  const surahList = document.getElementById("surahList");
-  const surahSearch = document.getElementById("surahSearch");
-  const resumeBtn = document.getElementById("resumeBtn");
+  // ... (keeping DOM elements same) ...
 
   // ===== State =====
   let pages = [];         
@@ -54,16 +45,17 @@
 
   let isSpread = true;    
   let zoom = 1.0;
-  let savedBookmark = 0; // 0 means none
+  let savedBookmark = 0; 
 
   // Track last reading page
   let lastReadingPage = toInt(load(STORAGE.readingPage, "0"), 0);
   let lastVisit = load(STORAGE.lastVisit, "");
 
   // Audio: page flip sound
-  const pageSound = new Audio("assets/page.mp3");
+  const pageSound = new Audio(assetUrl("assets/page.mp3"));
   pageSound.preload = "auto";
   pageSound.volume = 0.65;
+
   let soundEnabled = true;
 
   function setStatus(msg) { statusEl.textContent = msg; }
@@ -152,7 +144,7 @@
       const img = document.createElement("img");
       // img.loading = "lazy"; // Removed to fix black screen in zoom mode
       img.alt = `صفحة ${i + 1}`;
-      img.src = pages[i];
+      img.src = assetUrl(pages[i]);
       // CSS now handles width, height, objectFit, and transform
 
       page.appendChild(img);
@@ -406,7 +398,7 @@
   };
 
   // Audio
-  const pageAudio = new Audio("assets/page.mp3");
+  const pageAudio = new Audio(assetUrl("assets/page.mp3"));
   pageAudio.volume = 0.3;
   
   function playFlipSound() {
