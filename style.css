@@ -1,0 +1,287 @@
+:root{
+  --bg:#0b1220;
+  --panel: rgba(17,26,46,.72);
+  --border: rgba(255,255,255,.08);
+  --text:#e9eefc;
+  --muted:#a9b4d0;
+  --btn: rgba(255,255,255,.06);
+  --btn2: rgba(255,255,255,.10);
+  --accent:#6aa6ff;
+
+  --radius: 18px;
+  --shadow: 0 18px 50px rgba(0,0,0,.35);
+}
+
+*{ box-sizing:border-box; }
+html, body { height: 100%; }
+
+body{
+  margin:0;
+  font-family: system-ui, -apple-system, "Segoe UI", Tahoma, Arial;
+  background:
+    radial-gradient(900px 500px at 80% 0%, rgba(106,166,255,.18), transparent 55%),
+    radial-gradient(900px 500px at 10% 30%, rgba(150,255,200,.10), transparent 60%),
+    var(--bg);
+  color: var(--text);
+  overflow-x: hidden;
+}
+
+/* ===== Top Bar ===== */
+.topbar{
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  display:flex;
+  gap: 14px;
+  align-items:center;
+  justify-content:space-between;
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--border);
+  background: rgba(11,18,32,.86);
+  backdrop-filter: blur(10px);
+}
+
+.brand{ display:flex; gap:10px; align-items:center; }
+.logo{ font-size: 22px; }
+.brand h1{ margin:0; font-size: 16px; }
+.brand p{ margin:2px 0 0; font-size:12px; color: var(--muted); }
+
+.controls{
+  display:flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items:center;
+}
+
+.btn{
+  border: 1px solid var(--border);
+  background: linear-gradient(180deg, var(--btn2), var(--btn));
+  color: var(--text);
+  padding: 9px 12px;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: .2s transform, .2s background;
+  min-width: 44px; /* Touch-friendly minimum */
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.btn:hover{ transform: translateY(-1px); background: rgba(255,255,255,.08); }
+.btn:active{ transform: translateY(0px); }
+.btn:disabled{ opacity:.5; cursor:not-allowed; transform:none; }
+.btn.primary{
+  background: linear-gradient(180deg, rgba(106,166,255,.35), rgba(106,166,255,.12));
+  border-color: rgba(106,166,255,.35);
+}
+
+.sep{ width: 8px; height: 30px; border-left: 1px solid var(--border); margin: 0 2px; }
+
+.pagebox{
+  display:flex; gap:8px; align-items:center;
+  padding: 8px 10px;
+  border:1px solid var(--border);
+  border-radius: 12px;
+  background: rgba(255,255,255,.03);
+}
+.pagebox input{
+  width: 86px;
+  padding: 8px 10px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: rgba(0,0,0,.22);
+  color: var(--text);
+  outline: none;
+}
+
+.zoomLabel{
+  min-width: 60px;
+  text-align:center;
+  color: var(--muted);
+  font-weight: 600;
+}
+
+.layout{
+  padding: 14px;
+}
+
+/* ===== Viewer ===== */
+.viewerShell{
+  overflow: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--accent) var(--bg);
+}
+
+.viewerShell::-webkit-scrollbar { width: 8px; height: 8px; }
+.viewerShell::-webkit-scrollbar-track { background: rgba(0,0,0,.2); }
+.viewerShell::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 4px; }
+
+/* IMPORTANT: لا تضع transform على #book */
+#book{
+  display:block;
+  visibility: visible;
+  opacity: 1;
+  transform: scaleX(-1); /* Mirror for RTL */
+  touch-action: pan-y pinch-zoom; /* Better touch handling */
+  user-select: none; /* Prevent text selection on swipe */
+}
+
+.bookWrap{
+  min-height: calc(100vh - 170px);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  perspective: 2000px;
+  overflow: visible;
+}
+
+/* صفحات PageFlip */
+.page{
+  transform: scaleX(-1); /* Un-mirror content */
+  background: #fff;
+  width: 100%;
+  height: 100%;
+  display:block;
+  touch-action: none; /* Let PageFlip handle all touches */
+  -webkit-tap-highlight-color: transparent; /* Remove tap highlight */
+}
+
+.page img{
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display:block;
+  background:#fff;
+  pointer-events: none; /* Prevent image drag */
+}
+
+/* Hint bar */
+.hintbar{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap: 10px;
+  padding: 10px 14px;
+  border-top: 1px solid var(--border);
+  background: rgba(11,18,32,.55);
+  backdrop-filter: blur(8px);
+}
+.hint{ color: var(--muted); font-size: 12px; }
+.mini{ color: var(--muted); font-size: 12px; }
+
+/* ===== Sidebar ===== */
+.overlay{
+  position: fixed; inset:0; background:rgba(0,0,0,.6); z-index: 40;
+  backdrop-filter: blur(4px);
+  opacity:0; pointer-events:none; transition: .3s;
+}
+.overlay.active{ opacity:1; pointer-events:all; }
+
+.sidebar{
+  position: fixed; top:0; right:0; bottom:0; width: 340px;
+  background: linear-gradient(180deg, #131c2e 0%, #0b1220 100%);
+  border-left: 1px solid var(--border);
+  z-index: 50;
+  transform: translateX(100%);
+  transition: .3s cubic-bezier(0.4, 0.0, 0.2, 1);
+  display:flex; flex-direction:column;
+  box-shadow: -10px 0 40px rgba(0,0,0,.6);
+}
+.sidebar.active{ transform: translateX(0); }
+
+.sidebar-header{
+  padding: 18px 20px;
+  border-bottom: 1px solid var(--border);
+  display:flex; justify-content:space-between; align-items:center;
+  background: rgba(17,26,46,.95);
+  box-shadow: 0 4px 10px rgba(0,0,0,.1);
+}
+.sidebar-header h2{ margin:0; font-size: 20px; font-weight: 600; color: #fff; }
+.close-btn{ background:none; border:none; color:var(--muted); font-size:28px; cursor:pointer; }
+.close-btn:hover{ color: #fff; }
+
+.search-box{ padding: 15px 20px; background: rgba(255,255,255,.02); border-bottom: 1px solid var(--border); }
+.search-box input{
+  width:100%; padding:12px 14px; border-radius:10px; border:1px solid var(--border);
+  background:rgba(0,0,0,.4); color:#fff; outline:none; font-size: 14px;
+  transition: .2s border-color;
+}
+.search-box input:focus{ border-color: var(--accent); }
+
+.surah-list{
+  flex:1; overflow-y:auto; padding: 10px 15px;
+  scrollbar-width: thin;
+  scrollbar-color: #244077 transparent;
+}
+.surah-list::-webkit-scrollbar { width: 6px; }
+.surah-list::-webkit-scrollbar-thumb { background: #244077; border-radius: 3px; }
+
+.surah-item{
+  display:flex; justify-content:space-between; align-items: center;
+  padding: 12px 14px;
+  margin-bottom: 6px;
+  border: 1px solid transparent;
+  cursor:pointer;
+  transition: .2s all;
+  border-radius: 10px;
+  background: rgba(255,255,255,.02);
+}
+.surah-item:hover{
+  background: rgba(106,166,255,.08);
+  border-color: rgba(106,166,255,.2);
+  transform: translateX(-4px);
+}
+.surah-num{
+  color: var(--muted); font-size:14px; width: 35px; text-align:center;
+  background: rgba(0,0,0,.3); border-radius: 6px; padding: 2px 0; margin-left: 10px;
+}
+.surah-name{ font-weight: bold; flex:1; font-size: 16px; color: #e9eefc; }
+.surah-page{ color: var(--accent); font-size:13px; font-weight: 500; }
+
+/* Bookmark Ribbon */
+.bookmark-ribbon{
+  position: absolute;
+  top: -10px;
+  right: 40px;
+  z-index: 20;
+  font-size: 40px;
+  color: #e74c3c;
+  filter: drop-shadow(0 4px 6px rgba(0,0,0,.5));
+  animation: dropIn .5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  pointer-events: none;
+}
+.bookmark-ribbon.hidden{ display:none; }
+
+@keyframes dropIn {
+  from{ transform: translateY(-50px); opacity:0; }
+  to{ transform: translateY(0); opacity:1; }
+}
+
+@media (max-width: 980px){
+  .brand p{ display:none; }
+  .sidebar{ width: 100%; }
+  
+  /* Larger buttons for mobile */
+  .btn{ 
+    min-width: 48px;
+    min-height: 48px;
+    padding: 10px 14px;
+    font-size: 16px;
+  }
+  
+  /* Larger page input for mobile */
+  .pagebox input{
+    width: 100px;
+    font-size: 16px;
+    padding: 10px 12px;
+  }
+  
+  /* Hide some labels on mobile */
+  .pagebox span:first-child{ display: none; }
+  
+  /* Better touch areas for navigation */
+  #prevBtn, #nextBtn{
+    min-width: 60px;
+    font-size: 18px;
+  }
+}

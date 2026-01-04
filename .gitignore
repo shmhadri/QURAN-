@@ -1,0 +1,12 @@
+# Exclude large image files
+assets/pages/*.jpg
+assets/pages/*.png
+assets/page.mp3
+
+# Python
+__pycache__/
+*.pyc
+
+# OS
+.DS_Store
+Thumbs.db

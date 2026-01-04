@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="description" content="المصحف الكريم - موقع ثابت بتجربة جرّيدة كبيرة وتقليب صفحات وصوت ورق" />
+  <meta name="theme-color" content="#0b1220" />
+  <title>المصحف الكريم - جرّيدة</title>
+
+  <!-- Security: CSP (Using flip library from CDN) -->
+  <meta http-equiv="Content-Security-Policy"
+        content="
+          default-src 'self';
+          img-src 'self' data: blob:;
+          style-src 'self' 'unsafe-inline';
+          script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net;
+          connect-src 'self';
+          media-src 'self';
+          worker-src 'self' blob:;
+          base-uri 'self';
+          form-action 'self';
+          frame-ancestors 'self';
+        ">
+
+  <link rel="stylesheet" href="style.css" />
+  <link rel="manifest" href="manifest.json" />
+</head>
+
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <div class="logo">📖</div>
+      <div>
+        <h1>المصحف الكريم</h1>
+        <p>تجربة جرّيدة كبيرة • تقليب صفحات • بدون سيرفر</p>
+      </div>
+    </div>
+
+    <div class="controls">
+      <button class="btn" id="prevBtn" type="button">◀ السابق</button>
+
+      <div class="pagebox" title="اذهب لصفحة">
+        <span>صفحة</span>
+        <input id="pageInput" type="number" min="1" inputmode="numeric" />
+        <span id="pageCount">/ 0</span>
+      </div>
+
+      <button class="btn" id="nextBtn" type="button">التالي ▶</button>
+
+      <div class="sep"></div>
+
+      <button class="btn" id="zoomOut" type="button">−</button>
+      <div class="zoomLabel" id="zoomLabel">100%</div>
+      <button class="btn" id="zoomIn" type="button">＋</button>
+
+      <div class="sep"></div>
+
+      <button class="btn" id="spreadToggle" type="button" title="صفحتين/صفحة واحدة">🔍 وضع التكبير</button>
+      <button class="btn" id="fullscreenBtn" type="button" title="ملء الشاشة">⛶</button>
+      <button class="btn" id="soundBtn" type="button" title="صوت الورق">🔊</button>
+      <div class="sep"></div>
+      <button class="btn" id="resumeBtn" type="button" title="العودة لآخر صفحة" style="display:none;">📍 متابعة القراءة</button>
+      <button class="btn primary" id="indexBtn" type="button">☰ الفهرس</button>
+      <button class="btn" id="bookmarkBtn" type="button" title="حفظ علامة">🔖</button>
+    </div>
+  </header>
+
+  <!-- Sidebars/Modals -->
+  <div class="overlay" id="overlay"></div>
+  
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <h2>فهرس السور</h2>
+      <button class="close-btn" id="closeSidebar">×</button>
+    </div>
+    <div class="search-box">
+      <input type="text" id="surahSearch" placeholder="ابحث عن سورة..." />
+    </div>
+    <div class="surah-list" id="surahList"></div>
+  </aside>
+
+  <main class="layout">
+    <section class="viewerShell" aria-label="قارئ المصحف">
+      <div class="status" id="status">جارٍ التحميل…</div>
+      
+      <!-- Bookmark Indicator -->
+      <div id="bookmarkRibbon" class="bookmark-ribbon hidden" title="علامة محفوظة">🔖</div>
+
+      <!-- Book container -->
+      <div class="bookWrap">
+        <div id="book" class="book" aria-label="كتاب التقليب"></div>
+      </div>
+
+      <footer class="hintbar">
+        <div class="hint">اسحب يمين/يسار للتقليب • دبل-تاب للتكبير بالجوال • حفظ آخر صفحة تلقائيًا</div>
+        <div class="mini">
+          <span id="modeLabel">وضع: جرّيدة</span>
+        </div>
+      </footer>
+    </section>
+  </main>
+
+  <!-- Flipbook library (StPageFlip) -->
+  <script src="https://cdn.jsdelivr.net/npm/page-flip@2.0.7/dist/js/page-flip.browser.min.js"></script>
+  <script src="app.js"></script>
+
+  <!-- Optional: register service worker for offline -->
+  <script>
+    if ("serviceWorker" in navigator) {
+      window.addEventListener("load", () => {
+        navigator.serviceWorker.register("./sw.js").catch(() => {});
+      });
+    }
+  </script>
+</body>
+</html>
